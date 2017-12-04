@@ -12,7 +12,9 @@ namespace TreeView
 {
     public partial class Form1 : Form
     {
+        string currentPath = "Мой компьютер";
         TreeNode mainNode;
+        Stack<string> prevPath = new Stack<string>();
         public Form1()
         {
             InitializeComponent();
@@ -20,129 +22,108 @@ namespace TreeView
             mainNode.Name = "";
             mainNode.Nodes.Add("");
             mainNode.ImageIndex = 2;
+            mainNode.Tag = "comp";
             Tree.Nodes.Add(mainNode);
             Tree.BeforeExpand += Tree_BeforeExpand;
             Tree.BeforeSelect += Tree_BeforeSelect;
             List.DoubleClick += List_DoubleClick;
+
+            foreach (string view in Enum.GetNames(typeof(View)))
+                toolStripComboBox1.Items.Add(view);
+
+            toolStripComboBox1.SelectedIndex = 0;
+
+
+        }
+
+        void SetPath(string path)
+        {
+            currentPath = path;
+            Path.Text = path;
         }
 
         private void List_DoubleClick(object sender, EventArgs e)
         {
             if (List.SelectedItems.Count == 1)
             {
-                
-                if(Path.Text == "Мой компьютер")
+                try
                 {
-                    string newPath = List.SelectedItems[0].Text + "\\";
-
-                    var dirs = new DirectoryInfo(newPath).GetDirectories();
-                    List.Items.Clear();
-                    foreach (var item in dirs)
+                    if (Path.Text == "Мой компьютер")
                     {
-                        ListViewItem newNode = new ListViewItem(item.Name);
-                        newNode.ImageIndex = 1;
-                        List.Items.Add(newNode);
-                    }
-
-                    foreach (var item in new DirectoryInfo(newPath).GetFiles())
-                    {
-                        ListViewItem newNode = new ListViewItem(item.Name);
-                        newNode.Name = item.Name;
-                        newNode.ImageIndex = 0;
-                        List.Items.Add(newNode);
-                    }
-                    Path.Text = newPath;
-                }
-                else
-                {
-
-                    string newPath =  Path.Text + List.SelectedItems[0].Text + "\\";
-                
-                    var Node = List.SelectedItems[0];
-
-                    try
-                    {
+                        string newPath = List.SelectedItems[0].Text + "\\";
                         var dirs = new DirectoryInfo(newPath).GetDirectories();
                         List.Items.Clear();
-                        foreach (var item in dirs)
-                        {
-                            ListViewItem newNode = new ListViewItem(item.Name);
-                            newNode.ImageIndex = 1;
-                            List.Items.Add(newNode);
-                        }
-
-                        foreach (var item in new DirectoryInfo(newPath).GetFiles())
-                        {
-                            ListViewItem newNode = new ListViewItem(item.Name);
-                            newNode.Name = item.Name;
-                            newNode.ImageIndex = 0;
-                            List.Items.Add(newNode);
-                        }
-                        Path.Text = newPath;
-
+                        MoveToDir(newPath);
                     }
-                    catch (IOException ex)
+                    else
                     {
-                    
+
+                        string newPath = Path.Text + List.SelectedItems[0].Text + "\\";
+
+                        var Node = List.SelectedItems[0];
+                        List.Items.Clear();
+                        MoveToDir(newPath);
                     }
                 }
-
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 
-       
+
 
         void Tree_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
+            bool isNeedDrop = e.Action != TreeViewAction.ByKeyboard;
+
             try
             {
-                List.Items.Clear();
-                if (e.Node.FullPath == "Мой компьютер")
+                Tree.BeforeSelect -= Tree_BeforeSelect;
+                string tag = (string)e.Node.Tag;
+                //MessageBox.Show(tag);
+                //switch (tag)
+                //{
+                //    case "hard":
+                //        Tree.SelectedImageIndex = 2;
+                //        break;
+                //    case "comp":
+                //        Tree.SelectedImageIndex = 3;
+                //        break;
+                //    case "dir":
+                //        Tree.SelectedImageIndex = 1;
+                //        break;
+                //    case "file":
+                //        Tree.SelectedImageIndex = 0;
+                //        break;
+                //    default:
+                //        break;
+                //}
+                Tree.BeforeSelect += Tree_BeforeSelect;
+                if (isNeedDrop)
                 {
-                    Path.Text = "Мой компьютер";
-                    foreach (var item in DriveInfo.GetDrives())
-                    {
-                        ListViewItem newNode = new ListViewItem(item.Name);
-                        Tree.BeforeSelect -= Tree_BeforeSelect;
-                        Tree.SelectedImageIndex = 3;
-                        Tree.BeforeSelect += Tree_BeforeSelect;
-                        newNode.ImageIndex = 2;
-                        List.Items.Add(newNode);
-                    }
-                }
-                else
-                {
-                   
-                    Path.Text = GetParrentName(e.Node);
-                    foreach (var item in new DirectoryInfo(GetParrentName(e.Node)).GetDirectories())
-                    {
-                        ListViewItem newNode = new ListViewItem(item.Name);
-                        
-                        newNode.ImageIndex = 1;
-                        List.Items.Add(newNode);
-                    }
 
-                    foreach (var item in new DirectoryInfo(GetParrentName(e.Node)).GetFiles())
+                    if ((string)e.Node.Tag == "comp")
                     {
-                        ListViewItem newNode = new ListViewItem(item.Name);
-                        
-                        newNode.ImageIndex = 0;
-                        newNode.Name = item.Name;
-                        List.Items.Add(newNode);
+                        MoveToDir("Мой компьютер");
                     }
+                    else if ((string)e.Node.Tag != "file")
+                    {
 
+                        MoveToDir(GetParrentName(e.Node));
+
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Tree.BeforeSelect -= Tree_BeforeSelect;
-                Tree.SelectedImageIndex = 2;
-                Tree.BeforeSelect += Tree_BeforeSelect;   
+
                 MessageBox.Show(ex.Message);
             }
         }
 
-     
+
 
         private void Tree_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
@@ -158,18 +139,19 @@ namespace TreeView
                         newNode.Nodes.Add("");
                         newNode.Name = item.Name;
                         newNode.ImageIndex = 2;
+                        newNode.Tag = "hard";
                         e.Node.Nodes.Add(newNode);
                     }
                 }
-                else
+                else if ((string)e.Node.Tag != "file")
                 {
-                    //MessageBox.Show(GetParrentName(e.Node));
                     foreach (var item in new DirectoryInfo(GetParrentName(e.Node)).GetDirectories())
                     {
                         TreeNode newNode = new TreeNode(item.Name);
                         newNode.Nodes.Add("");
                         newNode.ImageIndex = 1;
                         newNode.Name = item.Name;
+                        newNode.Tag = "dir";
                         e.Node.Nodes.Add(newNode);
                     }
 
@@ -178,6 +160,7 @@ namespace TreeView
                         TreeNode newNode = new TreeNode(item.Name);
                         newNode.ImageIndex = 0;
                         newNode.Name = item.Name;
+                        newNode.Tag = "file";
                         e.Node.Nodes.Add(newNode);
                     }
 
@@ -187,7 +170,7 @@ namespace TreeView
             {
                 MessageBox.Show(ex.Message);
             }
-           
+
 
 
         }
@@ -195,8 +178,121 @@ namespace TreeView
         string GetParrentName(TreeNode node)
         {
             if (node.Parent != null)
-                return  GetParrentName(node.Parent) + node.Name + "\\";
+                return GetParrentName(node.Parent) + node.Name + "\\";
             else return "";
+        }
+
+        private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string viewName = toolStripComboBox1.SelectedItem.ToString();
+            View view = (View)Enum.Parse(typeof(View), viewName);
+            List.View = view;
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            toolStripButton1.Checked = !toolStripButton1.Checked;
+            List.ShowGroups = toolStripButton1.Checked;
+        }
+
+        private void Tree_KeyUp(object sender, KeyEventArgs e)
+        {
+        }
+
+        void MoveToDir(string path, bool needRemember = true)
+        {
+            try
+            {
+
+            
+         
+            List.Items.Clear();
+            if (path == "Мой компьютер")
+            {
+                foreach (var item in DriveInfo.GetDrives())
+                {
+                    ListViewItem newNode = new ListViewItem(item.Name);
+                    newNode.Tag = "hard";
+                    newNode.ImageIndex = 2;
+                    newNode.Group = List.Groups[2];
+                    List.Items.Add(newNode);
+                }
+            }
+            else 
+            {
+
+                foreach (var item in new DirectoryInfo(path).GetDirectories())
+                {
+                    ListViewItem newNode = new ListViewItem(item.Name);
+                    newNode.Tag = "dir";
+                    newNode.ImageIndex = 1;
+                    newNode.Group = List.Groups[0];
+                    newNode.SubItems.Add(item.LastAccessTime.ToShortDateString() + " " + item.LastAccessTime.ToShortTimeString());
+                    List.Items.Add(newNode);
+                }
+
+                foreach (var item in new DirectoryInfo(path).GetFiles())
+                {
+                    ListViewItem newNode = new ListViewItem(item.Name);
+                    newNode.Tag = "file";
+                    newNode.ImageIndex = 0;
+                    newNode.Name = item.Name;
+                    newNode.Group = List.Groups[1];
+                    newNode.SubItems.Add(item.LastAccessTime.ToShortDateString() + " " + item.LastAccessTime.ToShortTimeString());
+                    List.Items.Add(newNode);
+                }
+            }
+
+                if (needRemember)
+                {
+                    prevPath.Push(Path.Text);
+                    if (prevPath.Count > 0)
+                        button1.Enabled = true;
+                }
+                SetPath(path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                MoveToDir(currentPath);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            MoveToDir(prevPath.Pop(), false);
+            if (prevPath.Count == 1)
+            {
+                button1.Enabled = false;
+            }
+        }
+
+        private void Path_Validating(object sender, CancelEventArgs e)
+        {
+            if (Directory.Exists(Path.Text) || Path.Text == "Мой компьютер")
+            {
+                MoveToDir(Path.Text);
+            }
+            else
+            {
+                MessageBox.Show("Неверно указан путь!");
+                Path.Text = currentPath;
+
+                e.Cancel = true;
+            }
+        }
+
+        private void Tree_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
+            {
+                string pat = GetParrentName(Tree.SelectedNode);
+                if(pat == "")
+                    MoveToDir("Мой компьютер");
+                else
+                MoveToDir(pat);
+            }
         }
     }
 }
