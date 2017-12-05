@@ -10,11 +10,15 @@ using System.Windows.Forms;
 using System.IO;
 namespace TreeView
 {
+
+    
     public partial class Form1 : Form
     {
         string currentPath = "Мой компьютер";
         TreeNode mainNode;
         Stack<string> prevPath = new Stack<string>();
+        bool showHiddenElements = false;
+        bool showFileEx = true;
         public Form1()
         {
             InitializeComponent();
@@ -22,6 +26,7 @@ namespace TreeView
             mainNode.Name = "";
             mainNode.Nodes.Add("");
             mainNode.ImageIndex = 2;
+            mainNode.SelectedImageIndex = 3;
             mainNode.Tag = "comp";
             Tree.Nodes.Add(mainNode);
             Tree.BeforeExpand += Tree_BeforeExpand;
@@ -82,24 +87,6 @@ namespace TreeView
             {
                 Tree.BeforeSelect -= Tree_BeforeSelect;
                 string tag = (string)e.Node.Tag;
-                //MessageBox.Show(tag);
-                //switch (tag)
-                //{
-                //    case "hard":
-                //        Tree.SelectedImageIndex = 2;
-                //        break;
-                //    case "comp":
-                //        Tree.SelectedImageIndex = 3;
-                //        break;
-                //    case "dir":
-                //        Tree.SelectedImageIndex = 1;
-                //        break;
-                //    case "file":
-                //        Tree.SelectedImageIndex = 0;
-                //        break;
-                //    default:
-                //        break;
-                //}
                 Tree.BeforeSelect += Tree_BeforeSelect;
                 if (isNeedDrop)
                 {
@@ -139,6 +126,7 @@ namespace TreeView
                         newNode.Nodes.Add("");
                         newNode.Name = item.Name;
                         newNode.ImageIndex = 2;
+                        newNode.SelectedImageIndex = 2;
                         newNode.Tag = "hard";
                         e.Node.Nodes.Add(newNode);
                     }
@@ -150,15 +138,18 @@ namespace TreeView
                         TreeNode newNode = new TreeNode(item.Name);
                         newNode.Nodes.Add("");
                         newNode.ImageIndex = 1;
+                        newNode.SelectedImageIndex = 1;
                         newNode.Name = item.Name;
                         newNode.Tag = "dir";
                         e.Node.Nodes.Add(newNode);
+                        //Tree.SelectedImageIndex = newNode.ImageIndex;
                     }
 
                     foreach (var item in new DirectoryInfo(GetParrentName(e.Node)).GetFiles())
                     {
                         TreeNode newNode = new TreeNode(item.Name);
                         newNode.ImageIndex = 0;
+                        newNode.SelectedImageIndex = 0;
                         newNode.Name = item.Name;
                         newNode.Tag = "file";
                         e.Node.Nodes.Add(newNode);
@@ -195,10 +186,8 @@ namespace TreeView
             List.ShowGroups = toolStripButton1.Checked;
         }
 
-        private void Tree_KeyUp(object sender, KeyEventArgs e)
-        {
-        }
-
+    
+     
         void MoveToDir(string path, bool needRemember = true)
         {
             try
@@ -223,23 +212,29 @@ namespace TreeView
 
                 foreach (var item in new DirectoryInfo(path).GetDirectories())
                 {
-                    ListViewItem newNode = new ListViewItem(item.Name);
-                    newNode.Tag = "dir";
-                    newNode.ImageIndex = 1;
-                    newNode.Group = List.Groups[0];
-                    newNode.SubItems.Add(item.LastAccessTime.ToShortDateString() + " " + item.LastAccessTime.ToShortTimeString());
-                    List.Items.Add(newNode);
+                    if (showHiddenElements && (item.Attributes & FileAttributes.Hidden) == 0 || !showHiddenElements)
+                    {
+                        ListViewItem newNode = new ListViewItem(item.Name);
+                        newNode.Tag = "dir";
+                        newNode.ImageIndex = 1;
+                        newNode.Group = List.Groups[0];
+                        newNode.SubItems.Add(item.LastAccessTime.ToShortDateString() + " " + item.LastAccessTime.ToShortTimeString());
+                        List.Items.Add(newNode);
+                    }
                 }
 
                 foreach (var item in new DirectoryInfo(path).GetFiles())
                 {
-                    ListViewItem newNode = new ListViewItem(item.Name);
-                    newNode.Tag = "file";
-                    newNode.ImageIndex = 0;
-                    newNode.Name = item.Name;
-                    newNode.Group = List.Groups[1];
-                    newNode.SubItems.Add(item.LastAccessTime.ToShortDateString() + " " + item.LastAccessTime.ToShortTimeString());
-                    List.Items.Add(newNode);
+                    if (showHiddenElements && (item.Attributes & FileAttributes.Hidden) == 0 || !showHiddenElements)
+                    {
+                        ListViewItem newNode = new ListViewItem(item.Name);
+                        newNode.Tag = "file";
+                        newNode.ImageIndex = 0;
+                        newNode.Name = item.Name;
+                        newNode.Group = List.Groups[1];
+                        newNode.SubItems.Add(item.LastAccessTime.ToShortDateString() + " " + item.LastAccessTime.ToShortTimeString());
+                        List.Items.Add(newNode);
+                    }
                 }
             }
 
@@ -293,6 +288,16 @@ namespace TreeView
                 else
                 MoveToDir(pat);
             }
+        }
+
+        void update()
+        {
+        }
+
+        private void viewHidden_Click(object sender, EventArgs e)
+        {
+            showHiddenElements = !showHiddenElements;
+            MoveToDir(Path.Text, false);
         }
     }
 }

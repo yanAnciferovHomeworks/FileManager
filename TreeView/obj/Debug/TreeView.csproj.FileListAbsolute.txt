@@ -17,3 +17,12 @@ C:\Users\Yan\Desktop\Новая папка\FileManager\TreeView\obj\Debug\TreeVi
 C:\Users\Yan\Desktop\Новая папка\FileManager\TreeView\obj\Debug\TreeView.csproj.CoreCompileInputs.cache
 C:\Users\Yan\Desktop\Новая папка\FileManager\TreeView\obj\Debug\TreeView.exe
 C:\Users\Yan\Desktop\Новая папка\FileManager\TreeView\obj\Debug\TreeView.pdb
+C:\Users\anci_oq88\Desktop\Новая папка\FileManager\TreeView\bin\Debug\TreeView.exe.config
+C:\Users\anci_oq88\Desktop\Новая папка\FileManager\TreeView\obj\Debug\TreeView.exe
+C:\Users\anci_oq88\Desktop\Новая папка\FileManager\TreeView\obj\Debug\TreeView.pdb
+C:\Users\anci_oq88\Desktop\Новая папка\FileManager\TreeView\bin\Debug\TreeView.exe
+C:\Users\anci_oq88\Desktop\Новая папка\FileManager\TreeView\bin\Debug\TreeView.pdb
+C:\Users\anci_oq88\Desktop\Новая папка\FileManager\TreeView\obj\Debug\TreeView.csprojResolveAssemblyReference.cache
+C:\Users\anci_oq88\Desktop\Новая папка\FileManager\TreeView\obj\Debug\TreeView.Form1.resources
+C:\Users\anci_oq88\Desktop\Новая папка\FileManager\TreeView\obj\Debug\TreeView.Properties.Resources.resources
+C:\Users\anci_oq88\Desktop\Новая папка\FileManager\TreeView\obj\Debug\TreeView.csproj.GenerateResource.Cache

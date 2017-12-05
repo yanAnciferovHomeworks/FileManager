@@ -44,6 +44,8 @@
             this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.button1 = new System.Windows.Forms.Button();
+            this.viewHidden = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tool.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -59,7 +61,6 @@
             this.Tree.Size = new System.Drawing.Size(245, 479);
             this.Tree.TabIndex = 0;
             this.Tree.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Tree_KeyDown);
-            this.Tree.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Tree_KeyUp);
             // 
             // imageListSmall
             // 
@@ -89,9 +90,9 @@
             listViewGroup2,
             listViewGroup3});
             this.List.LargeImageList = this.imageListLarge;
-            this.List.Location = new System.Drawing.Point(252, 69);
+            this.List.Location = new System.Drawing.Point(252, 68);
             this.List.Name = "List";
-            this.List.Size = new System.Drawing.Size(736, 452);
+            this.List.Size = new System.Drawing.Size(735, 452);
             this.List.SmallImageList = this.imageListSmall;
             this.List.TabIndex = 1;
             this.List.UseCompatibleStateImageBehavior = false;
@@ -120,7 +121,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Path.Location = new System.Drawing.Point(293, 41);
             this.Path.Name = "Path";
-            this.Path.Size = new System.Drawing.Size(695, 20);
+            this.Path.Size = new System.Drawing.Size(694, 20);
             this.Path.TabIndex = 2;
             this.Path.Validating += new System.ComponentModel.CancelEventHandler(this.Path_Validating);
             // 
@@ -128,10 +129,12 @@
             // 
             this.tool.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripComboBox1,
-            this.toolStripButton1});
+            this.toolStripButton1,
+            this.toolStripSeparator1,
+            this.viewHidden});
             this.tool.Location = new System.Drawing.Point(0, 0);
             this.tool.Name = "tool";
-            this.tool.Size = new System.Drawing.Size(990, 25);
+            this.tool.Size = new System.Drawing.Size(999, 25);
             this.tool.TabIndex = 3;
             this.tool.Text = "toolStrip1";
             // 
@@ -164,17 +167,37 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // viewHidden
+            // 
+            this.viewHidden.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
+            this.viewHidden.Checked = true;
+            this.viewHidden.CheckOnClick = true;
+            this.viewHidden.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.viewHidden.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.viewHidden.Image = ((System.Drawing.Image)(resources.GetObject("viewHidden.Image")));
+            this.viewHidden.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.viewHidden.Name = "viewHidden";
+            this.viewHidden.Size = new System.Drawing.Size(214, 22);
+            this.viewHidden.Text = "Показывать скрытые файлы и папки";
+            this.viewHidden.Click += new System.EventHandler(this.viewHidden_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(990, 532);
+            this.ClientSize = new System.Drawing.Size(999, 532);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.tool);
             this.Controls.Add(this.Path);
             this.Controls.Add(this.List);
             this.Controls.Add(this.Tree);
             this.Name = "Form1";
+            this.ShowIcon = false;
             this.Text = "Проводник";
             this.tool.ResumeLayout(false);
             this.tool.PerformLayout();
@@ -196,6 +219,8 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ToolStripButton viewHidden;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }
 
